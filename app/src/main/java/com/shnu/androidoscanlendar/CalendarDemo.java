@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -68,19 +69,35 @@ public class CalendarDemo extends Activity implements OnClickListener {
 		if (v == mReadUserButton) {
 			Cursor userCursor = getContentResolver().query(Uri.parse(calanderURL), null,
 					null, null, null);
-			if (userCursor.getCount() > 0) {
-				userCursor.moveToFirst();
+//			if (userCursor.getCount() > 0) {
+//				userCursor.moveToFirst();
+//				String userName = userCursor.getString(userCursor.getColumnIndex("name"));
+//				Toast.makeText(CalendarDemo.this, userName + userCursor.toString(), Toast.LENGTH_LONG).show();
+//			}
+			while(userCursor.moveToNext()){
 				String userName = userCursor.getString(userCursor.getColumnIndex("name"));
-				Toast.makeText(CalendarDemo.this, userName + userCursor.toString(), Toast.LENGTH_LONG).show();
+				Log.e("Test the get ",userName+"\n");
 			}
+
 		} else if (v == mReadEventButton) {
 			Cursor eventCursor = getContentResolver().query(Uri.parse(calanderEventURL), null,
 					null, null, null);
-			if (eventCursor.getCount() > 0) {
-				eventCursor.moveToLast();
+//			if (eventCursor.getCount() > 0) {
+//				eventCursor.moveToLast();
+//				String eventTitle = eventCursor.getString(eventCursor.getColumnIndex("title"));
+//				Toast.makeText(CalendarDemo.this, eventTitle, Toast.LENGTH_LONG).show();
+//			}
+			while (eventCursor.moveToNext()){
 				String eventTitle = eventCursor.getString(eventCursor.getColumnIndex("title"));
-				Toast.makeText(CalendarDemo.this, eventTitle, Toast.LENGTH_LONG).show();
+				String eventDescription = eventCursor.getString(eventCursor.getColumnIndex("description"));
+				String eventLocation = eventCursor.getString(eventCursor.getColumnIndex("eventLocation"));
+				String eventColor = eventCursor.getString(eventCursor.getColumnIndex("eventColor"));
+				String eventColor_index = eventCursor.getString(eventCursor.getColumnIndex("eventColor_index"));
+				Log.e("Test the get ",eventTitle+"\n"+eventDescription+"\n"+eventLocation+"\n"+eventColor+"\n"+eventColor_index+"\n");
+
 			}
+
+
 		} else if (v == mWriteEventButton) {
 			//获取要出入的gmail账户的id
 			String calId = "";
@@ -114,12 +131,15 @@ public class CalendarDemo extends Activity implements OnClickListener {
 			values.put("event_id", id);
 			//提前10分钟有提醒
 			values.put("minutes", 10);
+//			values.put("calendar_displayName","calendar_displayName");
+			event.put("sync_data2",1);
 			getContentResolver().insert(Uri.parse(calanderRemiderURL), values);
 			Toast.makeText(CalendarDemo.this, "插入事件成功!!!", Toast.LENGTH_LONG).show();
 		}else if(v == mNewApiButton ){
-			createCalendar("123",6);
+			createCalendar("Mycalendar",6);
 		}
 	}
+//新建一个日历
 
 	@RequiresApi(api = Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 	private void createCalendar(String name, int color) {
@@ -156,6 +176,11 @@ public class CalendarDemo extends Activity implements OnClickListener {
 			// for ActivityCompat#requestPermissions for more details.
 			return;
 		}
+
+
+		//	getContentResolver().delete(CalendarContract.Calendars.CONTENT_URI," name = ?",new String[]{"Mycalendar"}); // 删除一个日历表
+
+
 		Uri uri = getContentResolver().insert(CalendarContract.Calendars.CONTENT_URI, values);
 		/**获取返回的新建日程ID*/
 		Long calId= Long.parseLong(uri.getLastPathSegment());
