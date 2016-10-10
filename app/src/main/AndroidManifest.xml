@@ -20,5 +20,4 @@
         <activity android:name=".CalendarDemo"/>
         <activity android:name=".CalendarDemo2"/>
     </application>
-
 </manifest>
